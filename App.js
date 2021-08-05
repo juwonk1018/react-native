@@ -1,6 +1,10 @@
 import { StatusBar } from 'expo-status-bar';
-import React, {useState, useEffect, useRef} from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { SliderComponent, StyleSheet, Text, View } from 'react-native';
+import { Button, BottomSheet, ListItem } from 'react-native-elements';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { CircularSlider } from 'react-native-elements-universe';
+
 
 
 const propStyle = (percent) => {
@@ -15,8 +19,7 @@ const borderStyle = (width) => {
   const borderWidth = width;
   if(width>20){
     return {
-      borderWidth: borderWidth,
-      borderRadius: width+60,
+      borderWidth: borderWidth-10,
     };
   }
   
@@ -25,7 +28,7 @@ const borderStyle = (width) => {
 const moreLayer = (percent, width) =>{
   if(percent > 50)
   {
-    return <View style= {[styles.progressLayer, propStyle(percent), , borderStyle(width)]}></View>
+    return <View style= {[styles.progressLayer, propStyle(percent)]}></View>
   }
   else{
     return <View style = {[styles.offsetLayer]}></View>
@@ -35,11 +38,10 @@ const moreLayer = (percent, width) =>{
 const CircularProgress = ({percent, width}) => 
 {
   let stylesFromProps = percent>50 ? propStyle(50) : propStyle(percent);
-  let borderProps = borderStyle(width);
   return (
     <View style={styles.container}>
       <Text>{percent} %</Text>
-      <View style = {[styles.progressLayer, stylesFromProps, borderProps]}></View>
+      <View style = {[styles.progressLayer, stylesFromProps]}></View>
       {moreLayer(percent, width)}
     </View>
   );
@@ -78,9 +80,42 @@ const output = () => {
       }
     }
   }, 10);
+  const [isVisible, setIsVisible] = useState(false);
+  const list = [
+    { title: 'List Item 1' },
+    { title: 'List Item 2' },
+    {
+      title: 'Cancel',
+      containerStyle: { backgroundColor: 'blue' },
+      titleStyle: { color: 'white' },
+      onPress: {toggleBottom},
+    },
+  ];
+
+  const toggleBottom = () => {
+    setIsVisible(!isVisible);
+  }
 
   return(
-    <CircularProgress percent = {count} width = {width}/>
+    <SafeAreaProvider>
+      
+      <CircularProgress percent = {count} width = {width}/>
+      <CircularSlider value={value} onChange={setValue} />
+      <Button title = "Show Bottom Sheet" onPress = {toggleBottom}/>
+
+      <BottomSheet
+        isVisible={isVisible}
+        containerStyle={{ backgroundColor: 'rgba(0.5, 0.25, 0, 0.2)' }}>
+        {list.map((l, i) => (
+          <ListItem key={i} containerStyle={l.containerStyle} onPress={l.onPress}>
+            <ListItem.Content>
+              <ListItem.Title style={l.titleStyle}>{l.title}</ListItem.Title>
+            </ListItem.Content>
+          </ListItem>
+        ))}
+      </BottomSheet>
+      
+    </SafeAreaProvider>
   );
 };
  
@@ -88,7 +123,7 @@ const styles = StyleSheet.create({
   container: {
     width: 200,
     height: 200,
-    borderWidth: 20,
+    borderWidth: 10,
     borderRadius : 100,
     borderColor: 'gray',
     alignItems: 'center',
@@ -105,13 +140,13 @@ const styles = StyleSheet.create({
     width: 200,
     height: 200,
     borderRadius : 100,
-    borderWidth: 20,
+    borderWidth: 10,
     transform:[{rotateZ: '-135deg'}],
   },
   progressLayer : {
     width: 200,
     height: 200,
-    borderWidth: 20,
+    borderWidth: 10,
     borderRadius: 100,
     position: 'absolute',
     borderLeftColor: 'transparent',
