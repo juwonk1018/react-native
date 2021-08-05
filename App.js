@@ -1,10 +1,8 @@
-import { StatusBar } from 'expo-status-bar';
 import React, { useState, useEffect, useRef } from 'react';
 import { SliderComponent, StyleSheet, Text, View } from 'react-native';
-import { Button, BottomSheet, ListItem } from 'react-native-elements';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { CircularSlider } from 'react-native-elements-universe';
-
+import BottomNavigation, { FullTab } from 'react-native-material-bottom-navigation';
+import Icon from '@expo/vector-icons/MaterialCommunityIcons'
 
 
 const propStyle = (percent) => {
@@ -13,16 +11,6 @@ const propStyle = (percent) => {
   return {
     transform:[{rotateZ : `${rotateBy}deg`}]
   };
-}
-
-const borderStyle = (width) => {
-  const borderWidth = width;
-  if(width>20){
-    return {
-      borderWidth: borderWidth-10,
-    };
-  }
-  
 }
 
 const moreLayer = (percent, width) =>{
@@ -65,6 +53,27 @@ function useInterval(callback, delay){
   }, [delay]);
 }
 
+const Movies = () => (
+  <View>
+    <Text>Movies</Text>
+  </View>
+)
+const Music = () => (
+  <View>
+    <Text>Music</Text>
+  </View>
+)
+const Books = () => (
+  <View>
+    <Text>Books</Text>
+  </View>
+)
+
+const tabs = [
+  { key: 'Movies', label: 'Movies', barColor: '#00695C', icon: 'movie' },
+  { key: 'Music', label: 'Music', barColor: '#6A1B9A', icon: 'music-note' },
+  { key: 'Books', label: 'Books', barColor: '#1565C0', icon: 'book' }
+]
 
 const output = () => {
   const [count, setCount] = useState(0);
@@ -80,41 +89,23 @@ const output = () => {
       }
     }
   }, 10);
-  const [isVisible, setIsVisible] = useState(false);
-  const list = [
-    { title: 'List Item 1' },
-    { title: 'List Item 2' },
-    {
-      title: 'Cancel',
-      containerStyle: { backgroundColor: 'blue' },
-      titleStyle: { color: 'white' },
-      onPress: {toggleBottom},
-    },
-  ];
-
-  const toggleBottom = () => {
-    setIsVisible(!isVisible);
-  }
-
+  
   return(
     <SafeAreaProvider>
-      
-      <CircularProgress percent = {count} width = {width}/>
-      <CircularSlider value={value} onChange={setValue} />
-      <Button title = "Show Bottom Sheet" onPress = {toggleBottom}/>
-
-      <BottomSheet
-        isVisible={isVisible}
-        containerStyle={{ backgroundColor: 'rgba(0.5, 0.25, 0, 0.2)' }}>
-        {list.map((l, i) => (
-          <ListItem key={i} containerStyle={l.containerStyle} onPress={l.onPress}>
-            <ListItem.Content>
-              <ListItem.Title style={l.titleStyle}>{l.title}</ListItem.Title>
-            </ListItem.Content>
-          </ListItem>
-        ))}
-      </BottomSheet>
-      
+      <View>
+        <CircularProgress percent = {count} width = {width}/>
+        <BottomNavigation
+        tabs={tabs}
+        renderTab={({ tab, isActive }) => (
+          <FullTab
+            isActive={isActive}
+            key={tab.key}
+            label={tab.label}
+            renderIcon={() => <Icon name={tab.icon} size={24} color="white" />}
+          />
+        )}/>
+        
+      </View>
     </SafeAreaProvider>
   );
 };
